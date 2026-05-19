@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "kind": "html",
+  "title": "BWSNS iOS Screen Prototype",
+  "entry": "bwsns-ios-prototype.html",
+  "renderer": "html",
+  "status": "complete",
+  "exports": [
+    "html",
+    "pdf",
+    "zip"
+  ],
+  "createdAt": "2026-05-19T05:21:08.820Z",
+  "updatedAt": "2026-05-19T05:21:08.824Z",
+  "metadata": {
+    "identifier": "bwsns-ios-prototype",
+    "artifactType": "text/html",
+    "inferred": false
+  }
+}

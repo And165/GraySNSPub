@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GraySNS setup start</title>
+  <style>
+    :root {
+      --bg: oklch(98% 0.004 240);
+      --surface: oklch(100% 0 0);
+      --fg: oklch(18% 0.012 250);
+      --muted: oklch(54% 0.012 250);
+      --border: oklch(91% 0.006 250);
+      --accent: oklch(58% 0.18 255);
+      --success: oklch(64% 0.12 170);
+      --soft: color-mix(in oklch, var(--fg) 5%, transparent);
+      --accent-soft: color-mix(in oklch, var(--accent) 12%, transparent);
+      --success-soft: color-mix(in oklch, var(--success) 18%, transparent);
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+    }
+    button, a { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    a { text-decoration: none; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 { font-family: var(--font-display); letter-spacing: 0; }
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 18px 16px 18px;
+    }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 44px;
+      margin-bottom: 8px;
+    }
+    .brand { font-size: 18px; font-weight: 800; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .hero {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background: var(--surface);
+      box-shadow: 0 18px 50px color-mix(in oklch, var(--fg) 7%, transparent);
+    }
+    .hero h1 {
+      margin-top: 12px;
+      font-size: 31px;
+      line-height: 1.08;
+    }
+    .hero p {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .progress {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .progress span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 34px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .progress .done { background: var(--success-soft); color: var(--fg); border-color: color-mix(in oklch, var(--success) 32%, var(--border)); }
+    .progress .active { background: var(--accent-soft); color: var(--fg); border-color: color-mix(in oklch, var(--accent) 28%, var(--border)); }
+    .section-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .num {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: var(--fg);
+      color: var(--surface);
+      font-family: var(--font-mono);
+      font-weight: 900;
+    }
+    .section-title h2 { font-size: 19px; line-height: 1.2; }
+    .section-title p { margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .card {
+      margin-top: 12px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--surface);
+    }
+    .candidate {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+      min-height: 64px;
+      padding: 10px 0;
+      border: 0;
+      border-top: 1px solid var(--border);
+      background: transparent;
+      text-align: left;
+    }
+    .candidate:first-of-type { border-top: 0; }
+    .app-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: var(--soft);
+      color: var(--fg);
+      font-weight: 900;
+    }
+    .candidate strong { display: block; font-size: 15px; }
+    .candidate small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .check {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: transparent;
+      font-size: 14px;
+      font-weight: 900;
+    }
+    .candidate[aria-pressed="true"] .app-icon { background: var(--success-soft); }
+    .candidate[aria-pressed="true"] .check { background: var(--success); border-color: var(--success); color: var(--surface); }
+    .selected-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+      min-height: 32px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--soft);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .empty { color: var(--muted); font-size: 12px; }
+    .action-card {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: var(--surface);
+    }
+    .action-card h3 { font-size: 17px; }
+    .action-card p { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .state { color: var(--muted); font-size: 12px; font-weight: 800; }
+    .state.ready { color: var(--fg); }
+    .bottom {
+      position: sticky;
+      bottom: 0;
+      margin-top: auto;
+      padding-top: 12px;
+      background: linear-gradient(to top, var(--bg) 72%, color-mix(in oklch, var(--bg) 0%, transparent));
+    }
+    .primary, .secondary {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      min-height: 52px;
+      border-radius: 18px;
+      border: 1px solid transparent;
+      font-weight: 850;
+      text-decoration: none;
+    }
+    .primary { background: var(--accent); color: var(--surface); }
+    .primary:disabled { background: var(--soft); color: var(--muted); border-color: var(--border); }
+    .secondary { margin-top: 8px; background: var(--surface); border-color: var(--border); color: var(--fg); }
+    .secondary.disabled { color: var(--muted); pointer-events: none; background: var(--soft); }
+    .toast {
+      position: fixed;
+      left: 18px;
+      right: 18px;
+      bottom: 82px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: var(--fg);
+      color: var(--surface);
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="nav">
+      <span class="brand">GraySNS</span>
+      <span class="pill">初回設定</span>
+    </header>
+
+    <section class="hero" data-od-id="setup-hero">
+      <span class="pill">3ステップ</span>
+      <h1>まず、グレーで開くSNSを選びます。</h1>
+      <p>選ぶ、ONにする、自動化を確認する。ここまで終えると利用時間の差分を見られます。</p>
+    </section>
+
+    <nav class="progress" aria-label="Setup progress">
+      <span class="active" id="progressSelect">選択</span>
+      <span id="progressShield">ON</span>
+      <span>自動化</span>
+    </nav>
+
+    <section class="card" data-od-id="app-selection">
+      <div class="section-title">
+        <span class="num">1</span>
+        <div>
+          <h2>フィルターするアプリを選択</h2>
+          <p>週間ランキングの上位から、対象にしたいSNSだけを追加します。</p>
+        </div>
+      </div>
+
+      <button class="candidate" type="button" aria-pressed="false" data-app="Instagram">
+        <span class="app-icon">IG</span>
+        <span><strong>Instagram</strong><small>ランキングから追加</small></span>
+        <span class="check">✓</span>
+      </button>
+      <button class="candidate" type="button" aria-pressed="false" data-app="X">
+        <span class="app-icon">X</span>
+        <span><strong>X</strong><small>ランキングから追加</small></span>
+        <span class="check">✓</span>
+      </button>
+      <button class="candidate" type="button" aria-pressed="false" data-app="TikTok">
+        <span class="app-icon">TT</span>
+        <span><strong>TikTok</strong><small>ランキングから追加</small></span>
+        <span class="check">✓</span>
+      </button>
+
+      <div class="selected-strip" id="selectedStrip">
+        <span class="empty">まだ選択されていません</span>
+      </div>
+    </section>
+
+    <section class="action-card" data-od-id="shield-action">
+      <span class="num">2</span>
+      <div>
+        <h3>フィルターをON</h3>
+        <p>選んだSNSを開く時にシールドを出します。</p>
+      </div>
+      <span class="state" id="shieldState">未設定</span>
+    </section>
+
+    <div class="bottom">
+      <button class="primary" id="shieldButton" type="button" disabled>選んだSNSにシールドをON</button>
+      <a class="secondary disabled" id="nextLink" href="02-automation-guide.html" aria-disabled="true">自動再シールドへ進む</a>
+    </div>
+    <div class="toast" id="toast" role="status">シールドをONにしました</div>
+  </main>
+
+  <script>
+    const selected = new Set();
+    const selectedStrip = document.getElementById("selectedStrip");
+    const shieldButton = document.getElementById("shieldButton");
+    const shieldState = document.getElementById("shieldState");
+    const progressShield = document.getElementById("progressShield");
+    const toast = document.getElementById("toast");
+    const nextLink = document.getElementById("nextLink");
+
+    function render() {
+      selectedStrip.innerHTML = "";
+      if (selected.size === 0) {
+        const empty = document.createElement("span");
+        empty.className = "empty";
+        empty.textContent = "まだ選択されていません";
+        selectedStrip.appendChild(empty);
+      } else {
+        selected.forEach((name) => {
+          const chip = document.createElement("span");
+          chip.className = "chip";
+          chip.textContent = name;
+          selectedStrip.appendChild(chip);
+        });
+      }
+      shieldButton.disabled = selected.size === 0;
+      shieldState.textContent = selected.size === 0 ? "未設定" : `${selected.size}件`;
+      shieldState.classList.toggle("ready", selected.size > 0);
+    }
+
+    document.querySelectorAll(".candidate").forEach((button) => {
+      button.addEventListener("click", () => {
+        const app = button.dataset.app;
+        const isOn = button.getAttribute("aria-pressed") === "true";
+        button.setAttribute("aria-pressed", String(!isOn));
+        if (isOn) selected.delete(app);
+        else selected.add(app);
+        render();
+      });
+    });
+
+    shieldButton.addEventListener("click", () => {
+      if (shieldButton.disabled) return;
+      progressShield.classList.add("done");
+      shieldState.textContent = "ON";
+      shieldState.classList.add("ready");
+      nextLink.classList.remove("disabled");
+      nextLink.removeAttribute("aria-disabled");
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1400);
+    });
+
+    render();
+  </script>
+</body>
+</html>

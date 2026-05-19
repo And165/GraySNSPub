@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GraySNS - あなたの時間を買い戻すSNSグレースケールアプリ</title>
+  <meta name="description" content="GraySNSは、選んだSNSをブロックし続けるのではなく、グレースケール化によってSNSの刺激を低減するセルフマネジメントアプリです。" />
+  <style>
+    :root {
+      --bg: #080807;
+      --panel: #161513;
+      --panel-2: #24211d;
+      --text: #f3eee6;
+      --muted: rgba(243, 238, 230, 0.66);
+      --line: rgba(255, 255, 255, 0.14);
+      --hot: #ff5f0a;
+      --amber: #ffb11a;
+      --gray: #8e8e8a;
+      --container: 1120px;
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.65;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 { letter-spacing: 0; line-height: 1.08; }
+    h1 { font-size: clamp(48px, 8vw, 104px); }
+    h2 { font-size: clamp(30px, 4vw, 54px); }
+    h3 { font-size: 20px; }
+    p { color: var(--muted); }
+
+    .container {
+      width: min(var(--container), calc(100% - 40px));
+      margin-inline: auto;
+    }
+    .nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(8, 8, 7, 0.78);
+      backdrop-filter: blur(18px);
+    }
+    .nav-inner {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+    }
+    .brand img {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    @media (max-width: 720px) {
+      .nav-links a:not(.button) { display: none; }
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      font-weight: 800;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .button.primary {
+      border-color: rgba(255, 95, 10, 0.8);
+      background: var(--hot);
+      color: #120b05;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 92vh;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      padding: 112px 0 72px;
+      border-bottom: 1px solid var(--line);
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("BWSNS/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png");
+      background-size: min(88vw, 920px);
+      background-repeat: no-repeat;
+      background-position: right -120px center;
+      opacity: 0.9;
+      filter: saturate(0.9);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(8, 8, 7, 0.46);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+    }
+    .eyebrow {
+      margin-bottom: 18px;
+      color: var(--amber);
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .lead {
+      max-width: 660px;
+      margin-top: 22px;
+      font-size: 19px;
+      color: rgba(243, 238, 230, 0.8);
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+    .section {
+      padding: 86px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .section-head {
+      max-width: 720px;
+      margin-bottom: 38px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    @media (max-width: 880px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero::before { background-position: center 76px; background-size: 560px; opacity: 0.36; }
+      .hero { min-height: 760px; }
+    }
+    .tile {
+      min-height: 220px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+    .tile strong {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--hot);
+      font-size: 34px;
+      line-height: 1;
+    }
+    .tile p { margin-top: 10px; }
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 0.9fr;
+      gap: 42px;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .split { grid-template-columns: 1fr; }
+    }
+    .phone {
+      width: min(360px, 100%);
+      margin-inline: auto;
+      border: 1px solid var(--line);
+      border-radius: 36px;
+      padding: 14px;
+      background: #050505;
+    }
+    .screen {
+      min-height: 680px;
+      border-radius: 26px;
+      overflow: hidden;
+      background: #111;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+    .screen-main {
+      padding: 28px 18px;
+      background:
+        linear-gradient(90deg, rgba(145, 145, 145, 0.18) 0 50%, rgba(255, 95, 10, 0.24) 50%),
+        #10100f;
+      filter: grayscale(0.45);
+    }
+    .app-icon {
+      width: 82px;
+      height: 82px;
+      border-radius: 18px;
+      margin-bottom: 28px;
+    }
+    .metric {
+      padding: 18px;
+      border-top: 1px solid var(--line);
+      background: #171512;
+    }
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      margin-top: 14px;
+    }
+    .bar span {
+      display: block;
+      width: 42%;
+      height: 100%;
+      background: var(--hot);
+    }
+    .research-list {
+      display: grid;
+      gap: 14px;
+    }
+    .research-item {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+    .research-item a {
+      color: var(--text);
+      text-decoration: underline;
+      text-decoration-color: rgba(255, 95, 10, 0.65);
+      text-underline-offset: 4px;
+    }
+    .fine {
+      color: rgba(243, 238, 230, 0.54);
+      font-size: 13px;
+    }
+    .footer {
+      padding: 34px 0;
+      color: var(--muted);
+    }
+    .footer-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer a { text-decoration: underline; text-underline-offset: 4px; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="#">
+        <img src="BWSNS/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png" alt="" />
+        <span>GraySNS</span>
+      </a>
+      <nav class="nav-links" aria-label="ページ内リンク">
+        <a href="#how">仕組み</a>
+        <a href="#research">研究</a>
+        <a href="#privacy">プライバシー</a>
+        <a class="button" href="#pricing">課金</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <p class="eyebrow">Evidence-informed grayscale shield</p>
+          <h1>GraySNS</h1>
+          <p class="lead">SNSを禁止するのではなく、グレースケール化によって刺激を落として開く。GraySNSは、あなたがSNSに奪われていた時間を買い戻すためのiPhoneアプリです。</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#pricing">1週間無料で始める</a>
+            <a class="button" href="#research">根拠を見る</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="container split">
+        <div>
+          <div class="section-head">
+            <p class="eyebrow">How it works</p>
+            <h2>選んだSNSだけを、グレースケールで開く。</h2>
+          </div>
+          <div class="grid">
+            <article class="tile">
+              <strong>1</strong>
+              <h3>SNSを選ぶ</h3>
+              <p>Screen Time APIを使い、対象アプリを端末上で選択します。</p>
+            </article>
+            <article class="tile">
+              <strong>2</strong>
+              <h3>低刺激で開く</h3>
+              <p>対象SNSを開く前にシールドを表示し、グレースケールで開く選択を出します。</p>
+            </article>
+            <article class="tile">
+              <strong>3</strong>
+              <h3>時間を見る</h3>
+              <p>導入前後の使用時間差分を表示し、続ける価値を数字で確認できます。</p>
+            </article>
+          </div>
+        </div>
+        <div class="phone" aria-label="GraySNS app preview">
+          <div class="screen">
+            <div class="screen-main">
+              <img class="app-icon" src="BWSNS/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png" alt="GraySNS icon" />
+              <h3>グレースケールで開く</h3>
+              <p style="margin-top: 10px;">色の刺激を落として、SNSとの距離を作る。</p>
+            </div>
+            <div class="metric">
+              <h3>今週の削減時間</h3>
+              <p>導入後の変化を見てから継続できます。</p>
+              <div class="bar"><span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="research">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Research basis</p>
+          <h2>色を落とすことは、注意の摩擦を作る。</h2>
+          <p class="lead">GraySNSは、グレースケール化がスマートフォン利用時間の削減に役立つ可能性を示した複数の研究成果をベースに、Screen Timeの仕組みを活用して任意のアプリをグレースケール化します。</p>
+        </div>
+        <div class="research-list">
+          <article class="research-item">
+            <h3><a href="https://www.tandfonline.com/doi/full/10.1080/03623319.2020.1737461">True colors: Grayscale setting reduces screen time in college students</a></h3>
+            <p>大学生を対象に、グレースケール設定とスクリーンタイムの変化を検証した研究です。</p>
+          </article>
+          <article class="research-item">
+            <h3><a href="https://journals.sagepub.com/doi/10.1177/20501579231212062">Is life brighter when your phone is not?</a></h3>
+            <p>グレースケール介入がデジタルウェルビーイングに与える影響を検討した研究です。</p>
+          </article>
+          <article class="research-item">
+            <h3><a href="https://www.tandfonline.com/doi/abs/10.1080/0144929X.2021.2007284">Curtailing smartphone use</a></h3>
+            <p>問題のあるスマートフォン利用を減らす介入として、アプリ配置変更とグレースケール化を扱っています。</p>
+          </article>
+        </div>
+        <p class="fine" style="margin-top: 18px;">GraySNSは医療目的のアプリではありません。研究知見を参考にしたセルフマネジメント支援ツールです。</p>
+      </div>
+    </section>
+
+    <section class="section" id="pricing">
+      <div class="container grid">
+        <article class="tile">
+          <strong>7日</strong>
+          <h3>無料で試す</h3>
+          <p>最初の1週間は、選んだSNSの使用時間がどれだけ減るかを確認できます。</p>
+        </article>
+        <article class="tile">
+          <strong>¥150</strong>
+          <h3>月額Pro</h3>
+          <p>無料期間後、継続する場合はApp Storeの確認画面から月150円で購読できます。</p>
+        </article>
+        <article class="tile">
+          <strong>いつでも</strong>
+          <h3>解約可能</h3>
+          <p>購読管理はApp Storeのサブスクリプション画面から行えます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="privacy">
+      <div class="container split">
+        <div>
+          <p class="eyebrow">Privacy</p>
+          <h2>対象SNSの選択は、端末上で扱います。</h2>
+          <p class="lead">GraySNSは、Screen Time APIのプライバシー保護されたトークンを使います。選択したアプリの制御とレポート表示は、AppleのScreen Time/Managed Settingsの仕組みに従って端末上で行われます。</p>
+        </div>
+        <div class="research-list">
+          <a class="button" href="privacy.html">プライバシーポリシー</a>
+          <a class="button" href="terms.html">課金と利用条件</a>
+          <a class="button" href="support.html">サポート</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-row">
+      <span>© 2026 GraySNS</span>
+      <span><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="support.html">Support</a></span>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GraySNS automation guide</title>
+  <style>
+    :root {
+      --bg: oklch(98% 0.004 240);
+      --surface: oklch(100% 0 0);
+      --fg: oklch(18% 0.012 250);
+      --muted: oklch(54% 0.012 250);
+      --border: oklch(91% 0.006 250);
+      --accent: oklch(58% 0.18 255);
+      --success: oklch(64% 0.12 170);
+      --soft: color-mix(in oklch, var(--fg) 5%, transparent);
+      --accent-soft: color-mix(in oklch, var(--accent) 12%, transparent);
+      --success-soft: color-mix(in oklch, var(--success) 18%, transparent);
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+    }
+    button, a { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    a { text-decoration: none; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 { font-family: var(--font-display); letter-spacing: 0; }
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 18px 16px 18px;
+    }
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 44px;
+      margin-bottom: 8px;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-weight: 900;
+    }
+    .title { font-size: 17px; font-weight: 800; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .panel {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background: var(--surface);
+      box-shadow: 0 18px 50px color-mix(in oklch, var(--fg) 7%, transparent);
+    }
+    .panel h1 { margin-top: 12px; font-size: 30px; line-height: 1.08; }
+    .panel p { margin-top: 10px; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .progress {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .progress span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 34px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .progress .done { background: var(--success-soft); color: var(--fg); border-color: color-mix(in oklch, var(--success) 32%, var(--border)); }
+    .progress .active { background: var(--accent-soft); color: var(--fg); border-color: color-mix(in oklch, var(--accent) 28%, var(--border)); }
+    .guide {
+      margin-top: 12px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--surface);
+    }
+    .guide-head {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .num {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      background: var(--fg);
+      color: var(--surface);
+      font-family: var(--font-mono);
+      font-weight: 900;
+    }
+    .guide h2 { font-size: 19px; }
+    .guide-head p { margin-top: 4px; color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .check-row {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 12px;
+      align-items: start;
+      width: 100%;
+      min-height: 58px;
+      padding: 11px 0;
+      border: 0;
+      border-top: 1px solid var(--border);
+      background: transparent;
+      text-align: left;
+    }
+    .check-row:first-of-type { border-top: 0; }
+    .box {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      color: transparent;
+      font-weight: 900;
+    }
+    .check-row[aria-pressed="true"] .box { background: var(--success); border-color: var(--success); color: var(--surface); }
+    .check-row strong { display: block; font-size: 14px; }
+    .check-row small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .shortcuts {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .shortcuts button {
+      flex: 1;
+      min-height: 48px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--fg);
+      font-weight: 850;
+    }
+    .shortcuts .primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+    .result {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 20px;
+      background: var(--soft);
+    }
+    .result-dot {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-weight: 900;
+    }
+    .result.complete .result-dot { background: var(--success); color: var(--surface); }
+    .result strong { display: block; font-size: 14px; }
+    .result small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .bottom {
+      position: sticky;
+      bottom: 0;
+      margin-top: auto;
+      padding-top: 12px;
+      background: linear-gradient(to top, var(--bg) 72%, color-mix(in oklch, var(--bg) 0%, transparent));
+    }
+    .primary-link, .secondary-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 52px;
+      border-radius: 18px;
+      border: 1px solid transparent;
+      font-weight: 850;
+    }
+    .primary-link { background: var(--fg); color: var(--surface); }
+    .primary-link.disabled { opacity: 0.48; pointer-events: none; }
+    .secondary-link { margin-top: 8px; background: var(--surface); border-color: var(--border); color: var(--fg); }
+    .toast {
+      position: fixed;
+      left: 18px;
+      right: 18px;
+      bottom: 82px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: var(--fg);
+      color: var(--surface);
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="nav">
+      <a class="back" href="01-setup-start.html" aria-label="Back">‹</a>
+      <span class="title">自動再シールド</span>
+      <span class="pill" id="countPill">0/4</span>
+    </header>
+
+    <section class="panel" data-od-id="automation-hero">
+      <span class="pill">Shortcuts</span>
+      <h1>SNSを閉じたら、もう一度シールドを戻す。</h1>
+      <p>特定のアプリが閉じたことを検知するためには初回のみショートカットの設定が必要です。</p>
+    </section>
+
+    <nav class="progress" aria-label="Setup progress">
+      <span class="done">選択</span>
+      <span class="done">ON</span>
+      <span class="active" id="autoProgress">自動化</span>
+    </nav>
+
+    <section class="guide" data-od-id="automation-checklist">
+      <div class="guide-head">
+        <span class="num">3</span>
+        <div>
+          <h2>オートメーションを設定</h2>
+          <p>Shortcutsで一度だけAppの「閉じられた時」を設定します。</p>
+        </div>
+      </div>
+
+      <button class="check-row" type="button" aria-pressed="false">
+        <span class="box">✓</span>
+        <span><strong>Shortcutsを開く</strong><small>GraySNSのアクションを追加できる状態にします。</small></span>
+      </button>
+      <button class="check-row" type="button" aria-pressed="false">
+        <span class="box">✓</span>
+        <span><strong>オートメーションでAppを選ぶ</strong><small>対象SNSを選び、「閉じられた時」を選択します。</small></span>
+      </button>
+      <button class="check-row" type="button" aria-pressed="false">
+        <span class="box">✓</span>
+        <span><strong>すぐに実行にする</strong><small>確認なしで「GraySNS: 閉じたら再シールド」を走らせます。</small></span>
+      </button>
+      <button class="check-row" type="button" aria-pressed="false">
+        <span class="box">✓</span>
+        <span><strong>SNSを開いてホームに戻る</strong><small>動いたら、この画面で確認済みにします。</small></span>
+      </button>
+
+      <div class="shortcuts">
+        <button class="primary" type="button" id="openShortcuts">Shortcutsを開く</button>
+        <button type="button" id="refresh">状態を更新</button>
+      </div>
+    </section>
+
+    <section class="result" id="result" data-od-id="automation-result">
+      <span class="result-dot">3</span>
+      <span><strong id="resultTitle">最終確認はまだです</strong><small id="resultText">対象SNSを一度開いて閉じた後、状態を更新してください。</small></span>
+    </section>
+
+    <div class="bottom">
+      <a class="primary-link" href="03-dashboard.html" id="finishLink">動作確認後に利用時間を見る</a>
+      <a class="secondary-link" href="01-setup-start.html">対象SNSを見直す</a>
+    </div>
+    <div class="toast" id="toast" role="status">Shortcutsへ移動する想定です</div>
+  </main>
+
+  <script>
+    const rows = [...document.querySelectorAll(".check-row")];
+    const countPill = document.getElementById("countPill");
+    const autoProgress = document.getElementById("autoProgress");
+    const result = document.getElementById("result");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultText = document.getElementById("resultText");
+    const finishLink = document.getElementById("finishLink");
+    const toast = document.getElementById("toast");
+
+    function update() {
+      const done = rows.filter((row) => row.getAttribute("aria-pressed") === "true").length;
+      countPill.textContent = `${done}/4`;
+      const complete = done === rows.length;
+      autoProgress.classList.toggle("done", complete);
+      result.classList.toggle("complete", complete);
+      finishLink.classList.toggle("disabled", !complete);
+      resultTitle.textContent = complete ? "自動再シールドを確認済み" : "最終確認はまだです";
+      resultText.textContent = complete ? "設定後はDashboardで利用時間の差分を確認できます。" : "対象SNSを一度開いて閉じた後、状態を更新してください。";
+    }
+
+    rows.forEach((row) => {
+      row.addEventListener("click", () => {
+        const isOn = row.getAttribute("aria-pressed") === "true";
+        row.setAttribute("aria-pressed", String(!isOn));
+        update();
+      });
+    });
+
+    document.getElementById("openShortcuts").addEventListener("click", () => {
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1400);
+    });
+
+    document.getElementById("refresh").addEventListener("click", () => {
+      rows.forEach((row) => row.setAttribute("aria-pressed", "true"));
+      update();
+    });
+
+    update();
+  </script>
+</body>
+</html>
