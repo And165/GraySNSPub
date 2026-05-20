@@ -19,6 +19,7 @@
       --container: 1120px;
       --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
       --scroll-gray: 0;
+      --logo-drift: 0px;
     }
 
     * { box-sizing: border-box; }
@@ -75,6 +76,20 @@
       height: 34px;
       border-radius: 8px;
     }
+    .scroll-logo-mark {
+      position: fixed;
+      top: 86px;
+      right: clamp(18px, 4vw, 54px);
+      z-index: 8;
+      width: clamp(76px, 12vw, 142px);
+      height: clamp(76px, 12vw, 142px);
+      border-radius: 22%;
+      opacity: 0.58;
+      pointer-events: none;
+      transform: translateY(var(--logo-drift));
+      filter: grayscale(var(--scroll-gray)) drop-shadow(0 18px 34px rgba(0, 0, 0, 0.34));
+      will-change: transform, filter;
+    }
     .nav-links {
       display: flex;
       align-items: center;
@@ -84,6 +99,11 @@
     }
     @media (max-width: 720px) {
       .nav-links a:not(.button) { display: none; }
+      .scroll-logo-mark {
+        top: 76px;
+        right: 16px;
+        opacity: 0.42;
+      }
     }
 
     .button {
@@ -293,6 +313,7 @@
       </nav>
     </div>
   </header>
+  <img class="scroll-logo-mark" src="BWSNS/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png" alt="" aria-hidden="true" />
 
   <main>
     <section class="hero">
@@ -434,6 +455,7 @@
       const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
       const progress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
       root.style.setProperty("--scroll-gray", progress.toFixed(3));
+      root.style.setProperty("--logo-drift", `${(-28 * progress).toFixed(1)}px`);
       ticking = false;
     }
 
