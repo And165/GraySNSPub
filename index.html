@@ -18,6 +18,7 @@
       --gray: #8e8e8a;
       --container: 1120px;
       --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+      --scroll-gray: 0;
     }
 
     * { box-sizing: border-box; }
@@ -39,6 +40,10 @@
     h2 { font-size: clamp(30px, 4vw, 54px); }
     h3 { font-size: 20px; }
     p { color: var(--muted); }
+    main {
+      filter: grayscale(var(--scroll-gray));
+      will-change: filter;
+    }
 
     .container {
       width: min(var(--container), calc(100% - 40px));
@@ -421,5 +426,24 @@
       <span><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="support.html">Support</a></span>
     </div>
   </footer>
+  <script>
+    const root = document.documentElement;
+    let ticking = false;
+
+    function updateScrollGray() {
+      const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+      root.style.setProperty("--scroll-gray", progress.toFixed(3));
+      ticking = false;
+    }
+
+    window.addEventListener("scroll", () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(updateScrollGray);
+    }, { passive: true });
+    window.addEventListener("resize", updateScrollGray);
+    updateScrollGray();
+  </script>
 </body>
 </html>
