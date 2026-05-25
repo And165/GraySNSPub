@@ -213,49 +213,15 @@
       width: min(360px, 100%);
       margin-inline: auto;
       border: 1px solid var(--line);
-      border-radius: 36px;
-      padding: 14px;
+      border-radius: 28px;
+      padding: 10px;
       background: #050505;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.36);
     }
-    .screen {
-      min-height: 680px;
-      border-radius: 26px;
-      overflow: hidden;
-      background: #111;
+    .phone img {
+      width: 100%;
+      border-radius: 20px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      display: grid;
-      grid-template-rows: 1fr auto;
-    }
-    .screen-main {
-      padding: 28px 18px;
-      background:
-        linear-gradient(90deg, rgba(145, 145, 145, 0.18) 0 50%, rgba(255, 95, 10, 0.24) 50%),
-        #10100f;
-      filter: grayscale(0.45);
-    }
-    .app-icon {
-      width: 82px;
-      height: 82px;
-      border-radius: 18px;
-      margin-bottom: 28px;
-    }
-    .metric {
-      padding: 18px;
-      border-top: 1px solid var(--line);
-      background: #171512;
-    }
-    .bar {
-      height: 12px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.12);
-      overflow: hidden;
-      margin-top: 14px;
-    }
-    .bar span {
-      display: block;
-      width: 42%;
-      height: 100%;
-      background: var(--hot);
     }
     .research-list {
       display: grid;
@@ -348,19 +314,8 @@
             </article>
           </div>
         </div>
-        <div class="phone" aria-label="GraySNS app preview">
-          <div class="screen">
-            <div class="screen-main">
-              <img class="app-icon" src="BWSNS/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png" alt="GraySNS icon" />
-              <h3>グレースケールで開く</h3>
-              <p style="margin-top: 10px;">色の刺激を落として、SNSとの距離を作る。</p>
-            </div>
-            <div class="metric">
-              <h3>今週の削減時間</h3>
-              <p>導入後の変化を見てから継続できます。</p>
-              <div class="bar"><span></span></div>
-            </div>
-          </div>
+        <div class="phone" aria-label="GraySNS app screenshot">
+          <img src="artifacts/app-store-screenshots/ja/01-select-apps.png" alt="選んだSNSだけ低刺激にする画面" loading="lazy" />
         </div>
       </div>
     </section>
@@ -401,23 +356,20 @@
     <section class="section" id="pricing">
       <div class="container grid">
         <article class="tile">
-          <strong>Free</strong>
-          <h3>基本機能は無料</h3>
-          <p>対象SNSの選択、手動シールド、利用時間の確認は無料で利用できます。</p>
-        </article>
-        <article class="tile">
           <strong>7日</strong>
-          <h3>Pro無料体験</h3>
-          <p>閉じたら再シールドする自動化機能を、初回は7日間無料で試せます。</p>
+          <h3>七日間無料でお試し</h3>
+          <p>効果を実感してから課金してください。</p>
         </article>
         <article class="tile">
-          <strong>¥150/月</strong>
+          <strong>¥150</strong>
           <h3>月額Pro</h3>
-          <p>無料期間後は月額150円で自動更新されます。解約はApp Storeのサブスクリプション管理から行えます。</p>
+          <p>150円であなたの時間を買い戻します。</p>
         </article>
-      </div>
-      <div class="container">
-        <p class="fine" style="margin-top: 18px;">Proは「閉じたら再シールド」の自動化を有効にします。実際の価格、無料期間、更新日はApp Storeの購入確認画面に表示される内容が優先されます。</p>
+        <article class="tile">
+          <strong>いつでも</strong>
+          <h3>解約可能</h3>
+          <p>いつでも解約可能。購読管理はApp Storeのサブスクリプション画面から行えます。</p>
+        </article>
       </div>
     </section>
 
@@ -431,6 +383,7 @@
         <div class="research-list">
           <a class="button" href="privacy.html">プライバシーポリシー</a>
           <a class="button" href="terms.html">課金と利用条件</a>
+          <a class="button" href="tokushoho.html">特定商取引法に基づく表記</a>
           <a class="button" href="support.html">サポート</a>
         </div>
       </div>
@@ -440,7 +393,7 @@
   <footer class="footer">
     <div class="container footer-row">
       <span>© 2026 GraySNS</span>
-      <span><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="support.html">Support</a></span>
+      <span><a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="tokushoho.html">特商法表記</a> · <a href="support.html">Support</a></span>
     </div>
   </footer>
   <script>
